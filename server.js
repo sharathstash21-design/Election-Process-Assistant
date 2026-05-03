@@ -5,9 +5,32 @@ const app = express();
 
 require('dotenv').config();
 
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const { Logging } = require('@google-cloud/logging');
+
+const logging = new Logging();
+const log = logging.log('election-assistant-log');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100 
+});
+
+app.use(helmet());
+app.use(compression());
 app.use(cors());
 app.use(express.json());
+app.use(limiter);
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((req, res, next) => {
+  const metadata = { resource: { type: 'global' } };
+  const entry = log.entry(metadata, { req: req.method, url: req.url });
+  log.write(entry).catch(console.error);
+  next();
+});
 
 app.post('/api/chat', async (req, res) => {
   try {
