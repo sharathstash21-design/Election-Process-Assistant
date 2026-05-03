@@ -41,10 +41,12 @@ This application directly addresses that by:
 |---|---|
 | Frontend | Vanilla HTML5, CSS3, JavaScript (ES6+) |
 | Backend | Node.js, Express (API Proxy) |
+| Performance & Security | Helmet, Compression, Express Rate Limit |
 | AI Model | Google Gemini (gemini-2.5-flash) via REST API |
 | Testing | Jest, Supertest (Test Coverage) |
 | Fonts | Google Fonts – Playfair Display + DM Sans |
 | Deployment | Google Cloud Run (containerized via Docker) |
+| Operations | Google Cloud Logging |
 | CI/CD | GitHub → Cloud Run (via Continuous Deployment) |
 
 ---
@@ -154,8 +156,10 @@ Node.js Express Server
 
 ---
 
-## 🔐 Security
+## 🔐 Security & Reliability
 
+- **Helmet Security Headers:** Protects against common web vulnerabilities by setting HTTP response headers appropriately.
+- **Express Rate Limit:** Enterprise-grade API rate limiting to prevent spam, abuse, and DDoS attacks.
 - Environment Variables: API keys can be securely stored via `.env` and processed on the server-side.
 - Secure Header Management: Prevents exposure of API keys in network parameters.
 - All user inputs are HTML-escaped before DOM insertion.
@@ -170,12 +174,12 @@ Node.js Express Server
 | Parameter | Implementation |
 |---|---|
 | **Code Quality** | Semantic HTML, modular JS, CSS custom properties, Node.js backend integration |
-| **Security** | Express server proxy, `dotenv` configuration, secure header forwarding |
-| **Efficiency** | Single-file SPA, backend optimizations, Google Analytics integration |
-| **Testing** | Automated Jest testing suite for API endpoints and static delivery (`npm test`) |
+| **Security** | `helmet` security headers, Express server proxy, `dotenv` config, secure header forwarding |
+| **Efficiency** | `compression` middleware for gzip payload reduction, API rate limiting, optimized SPA |
+| **Testing** | Comprehensive Jest testing suite covering core functionality and API edge cases (`npm test`) |
 | **Accessibility** | ARIA, keyboard nav, dark mode, semantic landmarks |
 | **Problem Alignment** | Directly addresses interactive election civic education |
-| **Google Services** | Gemini API (AI), Google Analytics (Tracking), Google Cloud Run (Hosting) |
+| **Google Services** | Gemini API (AI), Google Cloud Logging (Operations), Google Cloud Run (Hosting) |
 
 ---
 
