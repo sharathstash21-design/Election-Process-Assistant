@@ -41,7 +41,7 @@ This application directly addresses that by:
 |---|---|
 | Frontend | Vanilla HTML5, CSS3, JavaScript (ES6+) |
 | Backend | Node.js, Express (API Proxy) |
-| AI Model | Google Gemini (gemini-1.5-flash) via REST API |
+| AI Model | Google Gemini (gemini-1.5-flash-latest) via REST API |
 | Testing | Jest, Supertest (Test Coverage) |
 | Fonts | Google Fonts – Playfair Display + DM Sans |
 | Deployment | Google Cloud Run (containerized via Docker) |
@@ -123,7 +123,7 @@ Node.js Express Server
      │
      └── /api/chat Proxy (Secure Key Management)
               │
-              └── Google Gemini API (gemini-1.5-flash)
+              └── Google Gemini API (gemini-1.5-flash-latest)
                        │
                        └── Nonpartisan civic education responses
 ```
