@@ -4,6 +4,7 @@
   "description": "An interactive, AI-powered civic education web application that helps citizens understand the election process, timelines, and key voting steps in an engaging, accessible, and easy-to-follow way.",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "jest --coverage"
   },
   "repository": {
