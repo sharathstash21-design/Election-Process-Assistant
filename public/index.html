@@ -541,9 +541,7 @@
       </button>
     </div>
 
-    <footer class="footer">Civic education only · Nonpartisan · Powered by Google Gemini API <br><a href="#"
-        onclick="clearApiKey()" style="color:var(--muted); text-decoration:underline; font-size:10px;">Reset API Key</a>
-    </footer>
+    <footer class="footer">Civic education only · Nonpartisan · Powered by Google Gemini API</footer>
   </div>
 
   <script>
@@ -705,16 +703,6 @@ Guidelines:
       history.push({ role: 'user', content: txt });
 
       try {
-        let apiKey = localStorage.getItem('gemini_api_key');
-        if (!apiKey) {
-          apiKey = prompt('Please enter your Google Gemini API Key to continue:');
-          if (apiKey) {
-            localStorage.setItem('gemini_api_key', apiKey);
-          } else {
-            throw new Error('API Key is required to use the assistant.');
-          }
-        }
-
         const geminiHistory = history.map(msg => ({
           role: msg.role === 'user' ? 'user' : 'model',
           parts: [{ text: msg.content }]
@@ -723,8 +711,7 @@ Guidelines:
         const res = await fetch(`/api/chat`, {
           method: 'POST',
           headers: { 
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey 
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             systemPrompt: SYSTEM_PROMPT,
@@ -733,9 +720,6 @@ Guidelines:
         });
 
         if (!res.ok) {
-           if (res.status === 401 || res.status === 403) {
-             localStorage.removeItem('gemini_api_key');
-           }
            throw new Error(`API error ${res.status}`);
         }
         

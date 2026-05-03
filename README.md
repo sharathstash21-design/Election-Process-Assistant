@@ -71,7 +71,7 @@ npm start
 open http://localhost:8080
 ```
 
-> **Note:** The app features a secure Node.js backend. You can provide your Gemini API key in a `.env` file (`GEMINI_API_KEY=...`) or directly via the UI prompt.
+> **Note:** The app features a secure Node.js backend. You can provide your Gemini API key securely in Cloud Run environment variables or locally in a `.env` file (`GEMINI_API_KEY=...`).
 
 ### Docker / Cloud Run
 
