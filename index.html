@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Election Process Assistant – Civic Education AI</title>
+  <meta name="description"
+    content="An interactive AI-powered guide to understanding the election process, timelines, and voting steps. Built for civic education." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --navy: #1a2744;
+      --gold: #c9a84c;
+      --gold-light: rgba(201, 168, 76, 0.15);
+      --cream: #f9f6ef;
+      --light: #eef1f8;
+      --border: rgba(26, 39, 68, 0.12);
+      --muted: #6b7a99;
+      --pill-bg: rgba(201, 168, 76, 0.12);
+      --pill-text: #7a5c1e;
+      --bg: #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --navy: #d0d8f0;
+        --gold: #e8c56a;
+        --gold-light: rgba(232, 197, 106, 0.1);
+        --cream: #1a1d27;
+        --light: #22263a;
+        --border: rgba(200, 210, 240, 0.12);
+        --muted: #8899bb;
+        --pill-bg: rgba(201, 168, 76, 0.1);
+        --pill-text: #e8c56a;
+        --bg: #0f1219;
+      }
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--navy);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    #app {
+      max-width: 760px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      border-left: 0.5px solid var(--border);
+      border-right: 0.5px solid var(--border);
+    }
+
+    /* ─── Header ─── */
+    .header {
+      background: var(--navy);
+      padding: 2rem 1.75rem 1.75rem;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .header {
+        background: #0d1124;
+      }
+    }
+
+    .header-decor {
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 50px solid rgba(201, 168, 76, 0.1);
+      pointer-events: none;
+    }
+
+    .header-decor2 {
+      position: absolute;
+      bottom: -40px;
+      left: 60%;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 30px solid rgba(201, 168, 76, 0.06);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(201, 168, 76, 0.2);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.55);
+      font-weight: 300;
+    }
+
+    /* ─── Timeline ─── */
+    .timeline-strip {
+      display: flex;
+      overflow-x: auto;
+      padding: 0.9rem 1.5rem;
+      border-bottom: 0.5px solid var(--border);
+      scrollbar-width: none;
+      background: var(--bg);
+      flex-shrink: 0;
+      align-items: center;
+    }
+
+    .timeline-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .t-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 72px;
+      cursor: pointer;
+      padding: 6px 6px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .t-step:hover {
+      background: var(--light);
+    }
+
+    .t-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--light);
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 5px;
+      transition: all 0.25s;
+    }
+
+    .t-step.active .t-num {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.2);
+    }
+
+    .t-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.3;
+      font-weight: 400;
+      max-width: 68px;
+    }
+
+    .t-step.active .t-label {
+      color: var(--navy);
+      font-weight: 500;
+    }
+
+    .t-line {
+      width: 18px;
+      height: 1.5px;
+      background: var(--border);
+      flex-shrink: 0;
+      margin-bottom: 10px;
+    }
+
+    /* ─── Step detail ─── */
+    .step-detail {
+      padding: 1rem 1.75rem;
+      background: var(--gold-light);
+      border-bottom: 0.5px solid var(--border);
+      animation: fadeUp 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .step-detail h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .step-detail p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ─── Quick topics ─── */
+    .quick-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 0.9rem 1.75rem;
+      border-bottom: 0.5px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .topic-pill {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 13px;
+      border-radius: 20px;
+      background: var(--pill-bg);
+      color: var(--pill-text);
+      cursor: pointer;
+      border: 0.5px solid rgba(201, 168, 76, 0.3);
+      transition: all 0.2s;
+    }
+
+    .topic-pill:hover {
+      background: var(--gold);
+      color: #fff;
+      border-color: var(--gold);
+    }
+
+    /* ─── Chat area ─── */
+    .chat-area {
+      flex: 1;
+      padding: 1.25rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      overflow-y: auto;
+      min-height: 280px;
+    }
+
+    .msg-row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .msg-row.user-row {
+      align-items: flex-end;
+    }
+
+    .ai-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .ai-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .bubble {
+      max-width: 86%;
+      line-height: 1.65;
+      font-size: 14px;
+      padding: 0.85rem 1.05rem;
+      border-radius: 14px;
+      animation: fadeUp 0.3s ease;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .bubble.ai {
+      background: var(--light);
+      color: var(--navy);
+      border-radius: 4px 14px 14px 14px;
+      border: 0.5px solid var(--border);
+    }
+
+    .bubble.ai strong {
+      font-weight: 500;
+      color: var(--gold);
+    }
+
+    .bubble.ai ul {
+      margin: 0.5rem 0 0 1.1rem;
+    }
+
+    .bubble.ai li {
+      margin-bottom: 4px;
+    }
+
+    .bubble.user {
+      background: var(--navy);
+      color: #fff;
+      border-radius: 14px 4px 14px 14px;
+      font-weight: 300;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .bubble.user {
+        background: #2a3660;
+      }
+    }
+
+    /* ─── Typing indicator ─── */
+    .typing {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 0.85rem 1rem;
+      background: var(--light);
+      border: 0.5px solid var(--border);
+      border-radius: 4px 14px 14px 14px;
+      width: 62px;
+    }
+
+    .typing span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: bounce 1.2s infinite;
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+      }
+
+      30% {
+        transform: translateY(-5px);
+      }
+    }
+
+    /* ─── Input ─── */
+    .input-row {
+      display: flex;
+      gap: 8px;
+      padding: 0.85rem 1.75rem 1.25rem;
+      border-top: 0.5px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .input-row input {
+      flex: 1;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 0.6rem 1rem;
+      border: 0.5px solid var(--border);
+      border-radius: 24px;
+      background: var(--cream);
+      color: var(--navy);
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .input-row input:focus {
+      border-color: var(--gold);
+    }
+
+    .input-row input::placeholder {
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .send-btn:hover {
+      opacity: 0.85;
+    }
+
+    .send-btn:active {
+      transform: scale(0.94);
+    }
+
+    .send-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: #fff;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 0.75rem;
+      font-size: 11px;
+      color: var(--muted);
+      border-top: 0.5px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    /* Accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" role="main">
+    <h2 class="sr-only">Election Process Assistant – interactive civic education chatbot covering voter registration,
+      primaries, election day, and vote counting.</h2>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-decor" aria-hidden="true"></div>
+      <div class="header-decor2" aria-hidden="true"></div>
+      <div class="badge"><span class="badge-dot" aria-hidden="true"></span>AI-Powered Civic Guide</div>
+      <h1>Election Process Assistant</h1>
+      <p>Understand how democracy works — step by step</p>
+    </header>
+
+    <!-- Timeline navigation -->
+    <nav aria-label="Election stages" class="timeline-strip" id="timeline"></nav>
+
+    <!-- Step contextual detail -->
+    <section id="step-detail" class="step-detail" aria-live="polite"></section>
+
+    <!-- Quick topic pills -->
+    <div class="quick-topics" id="quick-topics" role="list" aria-label="Suggested questions"></div>
+
+    <!-- Chat messages -->
+    <div class="chat-area" id="chat" role="log" aria-live="polite" aria-label="Conversation"></div>
+
+    <!-- Text input -->
+    <div class="input-row">
+      <input type="text" id="user-input" placeholder="Ask about any part of the election process…"
+        aria-label="Your question" autocomplete="off" onkeydown="if(event.key==='Enter')sendMsg()" />
+      <button class="send-btn" onclick="sendMsg()" aria-label="Send message">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M2 21l21-9L2 3v7l15 2-15 2z" />
+        </svg>
+      </button>
+    </div>
+
+    <footer class="footer">Civic education only · Nonpartisan · Powered by Google Gemini API <br><a href="#"
+        onclick="clearApiKey()" style="color:var(--muted); text-decoration:underline; font-size:10px;">Reset API Key</a>
+    </footer>
+  </div>
+
+  <script>
+    // ─── Data ───
+    const STEPS = [
+      {
+        title: "Voter Registration",
+        desc: "Citizens must register before they can vote. Deadlines vary by region — typically 15–30 days before election day. Some countries have automatic registration.",
+        prompt: "Explain voter registration: who can register, how to do it, deadlines, and why it matters."
+      },
+      {
+        title: "Candidate Filing",
+        desc: "Aspiring candidates submit formal paperwork to appear on the ballot, often paying a filing fee or collecting petition signatures within set deadlines.",
+        prompt: "How does candidate filing work? What are the requirements and deadlines to get on the ballot?"
+      },
+      {
+        title: "Primary Election",
+        desc: "Parties hold primaries or caucuses to select their official candidates. Voters choose who will represent each party in the general election.",
+        prompt: "Explain primary elections and caucuses. How do they work and what is their role in the election process?"
+      },
+      {
+        title: "Campaigning",
+        desc: "Candidates campaign through rallies, debates, and advertising. This phase includes fundraising, voter outreach, and campaign finance regulations.",
+        prompt: "How does political campaigning work? Cover fundraising, campaign finance rules, debates, and outreach strategies."
+      },
+      {
+        title: "Election Day",
+        desc: "Registered voters cast ballots at polling stations or via mail/absentee ballot. Officials ensure secure and fair voting processes throughout the day.",
+        prompt: "What happens on election day? Walk me through the voting process, polling stations, absentee voting, and security measures."
+      },
+      {
+        title: "Vote Counting",
+        desc: "Election officials count and verify all ballots. Results are audited for accuracy. Close races may trigger automatic recounts.",
+        prompt: "How are votes counted and verified? Explain the process of tallying, auditing, and certifying election results."
+      },
+      {
+        title: "Results & Transition",
+        desc: "The winner is officially declared after certification. A peaceful transfer of power follows, with the incoming official assuming office on inauguration day.",
+        prompt: "What happens after election results? Explain certification, the transition of power, and the inauguration process."
+      }
+    ];
+
+    const QUICK_TOPICS = [
+      { label: "How to register?", q: "How do I register to vote and what are the key requirements?" },
+      { label: "Eligibility rules", q: "What are the voter eligibility requirements for elections?" },
+      { label: "Full timeline", q: "Give me a complete overview of the election timeline from start to finish." },
+      { label: "Election day guide", q: "What happens on election day and how do I prepare?" },
+      { label: "Vote counting process", q: "How are votes counted and results certified after an election?" },
+      { label: "Electoral College", q: "What is the Electoral College and how does it work in US presidential elections?" },
+      { label: "Primaries explained", q: "How do primary elections and caucuses work?" },
+      { label: "Campaign finance", q: "How does campaign finance work? What are the rules and limits?" }
+    ];
+
+    const SYSTEM_PROMPT = `You are a knowledgeable, friendly, and nonpartisan civic education assistant specializing in election processes worldwide. Help citizens of all backgrounds understand how elections work — covering voter registration, candidate filing, primaries, campaigning, election day procedures, vote counting, and transitions of power.
+
+Guidelines:
+- Be clear, engaging, accurate, and completely nonpartisan.
+- Use simple HTML formatting: <strong> for key terms, <ul><li> for lists, <br> for line breaks.
+- Keep responses focused: 80–130 words for simple questions, up to 200 for complex ones.
+- If asked about a specific country, tailor your answer; otherwise speak generally.
+- Always encourage civic participation and democratic engagement.
+- Never express political opinions or favor any party, candidate, or ideology.`;
+
+    // ─── State ───
+    let currentStep = 0;
+    let history = [];
+
+    // ─── Build UI ───
+    function buildTimeline() {
+      const strip = document.getElementById('timeline');
+      STEPS.forEach((s, i) => {
+        if (i > 0) {
+          const line = document.createElement('div');
+          line.className = 't-line';
+          line.setAttribute('aria-hidden', 'true');
+          strip.appendChild(line);
+        }
+        const step = document.createElement('div');
+        step.className = 't-step' + (i === 0 ? ' active' : '');
+        step.setAttribute('role', 'button');
+        step.setAttribute('tabindex', '0');
+        step.setAttribute('aria-label', `Stage ${i + 1}: ${s.title}`);
+        step.innerHTML = `<div class="t-num" aria-hidden="true">${i + 1}</div><div class="t-label">${s.title}</div>`;
+        step.onclick = () => selectStep(i);
+        step.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') selectStep(i); };
+        strip.appendChild(step);
+      });
+    }
+
+    function buildQuickTopics() {
+      const container = document.getElementById('quick-topics');
+      QUICK_TOPICS.forEach(t => {
+        const pill = document.createElement('span');
+        pill.className = 'topic-pill';
+        pill.setAttribute('role', 'listitem');
+        pill.setAttribute('tabindex', '0');
+        pill.textContent = t.label;
+        pill.onclick = () => sendQuick(t.q);
+        pill.onkeydown = e => { if (e.key === 'Enter') sendQuick(t.q); };
+        container.appendChild(pill);
+      });
+    }
+
+    function updateStepDetail(i) {
+      const el = document.getElementById('step-detail');
+      el.innerHTML = `<h3>Stage ${i + 1}: ${STEPS[i].title}</h3><p>${STEPS[i].desc}</p>`;
+      el.style.animation = 'none';
+      requestAnimationFrame(() => { el.style.animation = 'fadeUp 0.3s ease'; });
+    }
+
+    // ─── Interactions ───
+    function selectStep(i) {
+      currentStep = i;
+      document.querySelectorAll('.t-step').forEach((el, idx) => {
+        el.classList.toggle('active', idx === i);
+      });
+      updateStepDetail(i);
+      sendQuick(STEPS[i].prompt);
+    }
+
+    function sendQuick(q) {
+      document.getElementById('user-input').value = q;
+      sendMsg();
+    }
+
+    function appendMsg(html, type) {
+      const chat = document.getElementById('chat');
+      const row = document.createElement('div');
+      row.className = 'msg-row' + (type === 'user' ? ' user-row' : '');
+      if (type === 'ai') {
+        row.innerHTML = `<div class="ai-label"><span class="ai-icon" aria-hidden="true"></span>Election Guide</div><div class="bubble ai">${html}</div>`;
+      } else {
+        row.innerHTML = `<div class="bubble user" role="log">${escapeHtml(html)}</div>`;
+      }
+      chat.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+      return row;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    async function sendMsg() {
+      const inp = document.getElementById('user-input');
+      const txt = inp.value.trim();
+      if (!txt) return;
+      inp.value = '';
+
+      appendMsg(txt, 'user');
+
+      // Typing indicator
+      const typingRow = document.createElement('div');
+      typingRow.className = 'msg-row';
+      typingRow.innerHTML = `<div class="ai-label"><span class="ai-icon" aria-hidden="true"></span>Election Guide</div><div class="typing"><span></span><span></span><span></span></div>`;
+      document.getElementById('chat').appendChild(typingRow);
+      document.getElementById('chat').scrollTop = 9999;
+
+      history.push({ role: 'user', content: txt });
+
+      try {
+        let apiKey = localStorage.getItem('gemini_api_key');
+        if (!apiKey) {
+          apiKey = prompt('Please enter your Google Gemini API Key to continue:');
+          if (apiKey) {
+            localStorage.setItem('gemini_api_key', apiKey);
+          } else {
+            throw new Error('API Key is required to use the assistant.');
+          }
+        }
+
+        const geminiHistory = history.map(msg => ({
+          role: msg.role === 'user' ? 'user' : 'model',
+          parts: [{ text: msg.content }]
+        }));
+
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            system: SYSTEM_PROMPT,
+            messages: history
+          })
+        });
+
+        if (!res.ok) throw new Error(`API error ${res.status}`);
+        const data = await res.json();
+        const reply = data.content?.find(b => b.type === 'text')?.text || 'No response received. Please try again.';
+
+        history.push({ role: 'assistant', content: reply });
+        typingRow.innerHTML = `<div class="ai-label"><span class="ai-icon" aria-hidden="true"></span>Election Guide</div><div class="bubble ai">${reply}</div>`;
+      } catch (err) {
+        console.error(err);
+        typingRow.innerHTML = `<div class="ai-label"><span class="ai-icon" aria-hidden="true"></span>Election Guide</div><div class="bubble ai">Sorry, something went wrong. Please check your connection and try again.</div>`;
+      }
+
+      document.getElementById('chat').scrollTop = 9999;
+    }
+
+    // ─── Init ───
+    buildTimeline();
+    buildQuickTopics();
+    updateStepDetail(0);
+
+    // Welcome message
+    appendMsg(
+      'Welcome! I\'m your <strong>interactive election guide</strong>. I can help you understand every stage of the democratic process — from voter registration to the transition of power.<br><br>Use the <strong>stage timeline</strong> above, tap a <strong>suggested topic</strong>, or type your question below!',
+      'ai'
+    );
+  </script>
+</body>
+
+</html>
