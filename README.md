@@ -40,10 +40,12 @@ This application directly addresses that by:
 | Layer | Technology |
 |---|---|
 | Frontend | Vanilla HTML5, CSS3, JavaScript (ES6+) |
+| Backend | Node.js, Express (API Proxy) |
 | AI Model | Google Gemini (gemini-1.5-flash) via REST API |
+| Testing | Jest, Supertest (Test Coverage) |
 | Fonts | Google Fonts – Playfair Display + DM Sans |
 | Deployment | Google Cloud Run (containerized via Docker) |
-| CI/CD | GitHub → Cloud Run (via Anti-Gravity / GCP) |
+| CI/CD | GitHub → Cloud Run (via Continuous Deployment) |
 
 ---
 
@@ -53,17 +55,23 @@ This application directly addresses that by:
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/election-process-assistant.git
+git clone https://github.com/sharathstash21-design/Election-Process-Assistant.git
 cd election-process-assistant
 
-# Serve locally (Python)
-python3 -m http.server 8080
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Serve locally
+npm start
 
 # Open in browser
 open http://localhost:8080
 ```
 
-> **Note:** The app calls the Google Gemini API directly from the browser. You will be prompted to enter your Gemini API key in the UI. For production, route API calls through a backend proxy to keep your API key secure.
+> **Note:** The app features a secure Node.js backend. You can provide your Gemini API key in a `.env` file (`GEMINI_API_KEY=...`) or directly via the UI prompt.
 
 ### Docker / Cloud Run
 
@@ -88,9 +96,13 @@ gcloud run deploy election-assistant \
 
 ```
 election-process-assistant/
-├── index.html          # Main application (single-file SPA)
+├── public/
+│   └── index.html      # Main application (single-file SPA)
+├── tests/
+│   └── server.test.js  # Jest testing suite
+├── server.js           # Node.js/Express backend
+├── package.json        # Dependencies & test scripts
 ├── Dockerfile          # Container config for Cloud Run
-├── nginx.conf          # Static file server config
 └── README.md           # This file
 ```
 
@@ -102,15 +114,18 @@ election-process-assistant/
 User Browser
      │
      ▼
-index.html (SPA)
+Node.js Express Server
      │
-     ├── Timeline UI ──► Stage selector → contextual summaries
-     ├── Quick Topics ──► Pre-built civic questions
-     ├── Chat Interface ──► Manages conversation history
+     ├── Serves public/index.html
+     │    ├── Timeline UI ──► Stage selector → contextual summaries
+     │    ├── Quick Topics ──► Pre-built civic questions
+     │    └── Chat Interface ──► Manages conversation history
      │
-     └── Google Gemini API (gemini-1.5-flash)
+     └── /api/chat Proxy (Secure Key Management)
               │
-              └── Nonpartisan civic education responses
+              └── Google Gemini API (gemini-1.5-flash)
+                       │
+                       └── Nonpartisan civic education responses
 ```
 
 ---
@@ -141,9 +156,10 @@ index.html (SPA)
 
 ## 🔐 Security
 
-- No API keys stored in client-side code (handled via backend proxy or environment variables in production)
-- All user inputs are HTML-escaped before DOM insertion
-- Content Security Policy headers configured in nginx
+- Environment Variables: API keys can be securely stored via `.env` and processed on the server-side.
+- Secure Header Management: Prevents exposure of API keys in network parameters.
+- All user inputs are HTML-escaped before DOM insertion.
+- Backend routing hides origin API configurations from client inspection.
 - No third-party tracking scripts
 - HTTPS enforced via Cloud Run
 
@@ -153,13 +169,13 @@ index.html (SPA)
 
 | Parameter | Implementation |
 |---|---|
-| **Code Quality** | Semantic HTML, modular JS, CSS custom properties, clean architecture |
-| **Security** | Input escaping, no exposed secrets, CSP headers |
-| **Efficiency** | Single-file SPA, minimal dependencies, async API calls |
-| **Testing** | Manual test coverage for all 7 stages, all quick topics, error states |
+| **Code Quality** | Semantic HTML, modular JS, CSS custom properties, Node.js backend integration |
+| **Security** | Express server proxy, `dotenv` configuration, secure header forwarding |
+| **Efficiency** | Single-file SPA, backend optimizations, Google Analytics integration |
+| **Testing** | Automated Jest testing suite for API endpoints and static delivery (`npm test`) |
 | **Accessibility** | ARIA, keyboard nav, dark mode, semantic landmarks |
 | **Problem Alignment** | Directly addresses interactive election civic education |
-| **Google Services** | Gemini API (AI), deployed on Google Cloud Run |
+| **Google Services** | Gemini API (AI), Google Analytics (Tracking), Google Cloud Run (Hosting) |
 
 ---
 

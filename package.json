@@ -1,0 +1,30 @@
+{
+  "name": "election-process-assistant",
+  "version": "1.0.0",
+  "description": "An interactive, AI-powered civic education web application that helps citizens understand the election process, timelines, and key voting steps in an engaging, accessible, and easy-to-follow way.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sharathstash21-design/Election-Process-Assistant.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sharathstash21-design/Election-Process-Assistant/issues"
+  },
+  "homepage": "https://github.com/sharathstash21-design/Election-Process-Assistant#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2"
+  }
+}

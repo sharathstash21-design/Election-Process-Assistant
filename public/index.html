@@ -11,6 +11,14 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap"
     rel="stylesheet" />
+  <!-- Google tag (gtag.js) for Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
   <style>
     *,
     *::before,
@@ -712,20 +720,27 @@ Guidelines:
           parts: [{ text: msg.content }]
         }));
 
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const res = await fetch(`/api/chat`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey 
+          },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 1000,
-            system: SYSTEM_PROMPT,
-            messages: history
+            systemPrompt: SYSTEM_PROMPT,
+            history: geminiHistory
           })
         });
 
-        if (!res.ok) throw new Error(`API error ${res.status}`);
+        if (!res.ok) {
+           if (res.status === 401 || res.status === 403) {
+             localStorage.removeItem('gemini_api_key');
+           }
+           throw new Error(`API error ${res.status}`);
+        }
+        
         const data = await res.json();
-        const reply = data.content?.find(b => b.type === 'text')?.text || 'No response received. Please try again.';
+        const reply = data.reply || 'No response received. Please try again.';
 
         history.push({ role: 'assistant', content: reply });
         typingRow.innerHTML = `<div class="ai-label"><span class="ai-icon" aria-hidden="true"></span>Election Guide</div><div class="bubble ai">${reply}</div>`;
