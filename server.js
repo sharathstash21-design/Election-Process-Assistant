@@ -28,7 +28,9 @@ app.post('/api/chat', async (req, res) => {
     });
 
     if (!response.ok) {
-       return res.status(response.status).json({ error: `API error ${response.status}` });
+       const errorData = await response.json();
+       const errorMessage = errorData.error?.message || `API error ${response.status}`;
+       return res.status(response.status).json({ error: errorMessage });
     }
 
     const data = await response.json();

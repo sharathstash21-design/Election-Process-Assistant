@@ -719,18 +719,19 @@ Guidelines:
           })
         });
 
+        const data = await res.json();
+        
         if (!res.ok) {
-           throw new Error(`API error ${res.status}`);
+           throw new Error(data.error || `API error ${res.status}`);
         }
         
-        const data = await res.json();
         const reply = data.reply || 'No response received. Please try again.';
 
         history.push({ role: 'assistant', content: reply });
-        typingRow.innerHTML = `<div class="ai-label"><span class="ai-icon" aria-hidden="true"></span>Election Guide</div><div class="bubble ai">${reply}</div>`;
+        typingRow.innerHTML = `<div class="ai-label"><span class="ai-icon" aria-hidden="true"></span>Election Guide</div><div class="bubble ai">${reply.replace(/\\n/g, '<br>')}</div>`;
       } catch (err) {
         console.error(err);
-        typingRow.innerHTML = `<div class="ai-label"><span class="ai-icon" aria-hidden="true"></span>Election Guide</div><div class="bubble ai">Sorry, something went wrong. Please check your connection and try again.</div>`;
+        typingRow.innerHTML = `<div class="ai-label"><span class="ai-icon" aria-hidden="true"></span>Election Guide</div><div class="bubble ai" style="color:#d32f2f;">Error: ${err.message}</div>`;
       }
 
       document.getElementById('chat').scrollTop = 9999;
